@@ -111,7 +111,7 @@ type Domain struct {
 	UpdatedAt    int64    `json:"updatedAt,omitempty"`
 	Verified     bool     `json:"verified,omitempty"`
 	Verification []struct {
-		Type  string `json:"type"`
+		Type   string `json:"type"`
 		Domain string `json:"domain"`
 		Value  string `json:"value"`
 	} `json:"verification,omitempty"`
@@ -123,6 +123,136 @@ type Domain struct {
 
 // CreateDomainRequest represents a request to create/add a domain to a project.
 type CreateDomainRequest struct {
-	Name string `json:"name"`
+	Name      string `json:"name"`
 	GitBranch string `json:"gitBranch,omitempty"`
+}
+
+// UpdateProjectRequest represents a request to update a project.
+type UpdateProjectRequest struct {
+	Name            string `json:"name,omitempty"`
+	Framework       string `json:"framework,omitempty"`
+	BuildCommand    string `json:"buildCommand,omitempty"`
+	DevCommand      string `json:"devCommand,omitempty"`
+	InstallCommand  string `json:"installCommand,omitempty"`
+	OutputDirectory string `json:"outputDirectory,omitempty"`
+	RootDirectory   string `json:"rootDirectory,omitempty"`
+	PublicSource    *bool  `json:"publicSource,omitempty"`
+	GitRepository   *struct {
+		Type string `json:"type"`
+		Repo string `json:"repo"`
+	} `json:"gitRepository,omitempty"`
+}
+
+// UpdateEnvVarRequest represents a request to update an environment variable.
+type UpdateEnvVarRequest struct {
+	Value     string      `json:"value,omitempty"`
+	Target    []EnvTarget `json:"target,omitempty"`
+	GitBranch string      `json:"gitBranch,omitempty"`
+}
+
+// DeploymentLog represents a log entry from a deployment.
+type DeploymentLog struct {
+	ID        string `json:"id"`
+	Timestamp int64  `json:"timestamp"`
+	Message   string `json:"message"`
+	Type      string `json:"type,omitempty"`
+}
+
+// DeploymentLogsResponse represents the response from getting deployment logs.
+type DeploymentLogsResponse struct {
+	Logs []DeploymentLog `json:"logs"`
+}
+
+// Team represents a Vercel team.
+type Team struct {
+	ID         string `json:"id"`
+	Name       string `json:"name"`
+	Slug       string `json:"slug"`
+	Avatar     string `json:"avatar,omitempty"`
+	CreatedAt  int64  `json:"createdAt,omitempty"`
+	UpdatedAt  int64  `json:"updatedAt,omitempty"`
+	Membership *struct {
+		Role string `json:"role"`
+	} `json:"membership,omitempty"`
+}
+
+// ListTeamsResponse represents the response from listing teams.
+type ListTeamsResponse struct {
+	Teams []Team `json:"teams"`
+}
+
+// TeamMember represents a member of a team.
+type TeamMember struct {
+	User struct {
+		ID       string `json:"id"`
+		Username string `json:"username"`
+		Name     string `json:"name,omitempty"`
+		Email    string `json:"email,omitempty"`
+		Avatar   string `json:"avatar,omitempty"`
+	} `json:"user"`
+	Role      string `json:"role"`
+	CreatedAt int64  `json:"createdAt,omitempty"`
+}
+
+// ListTeamMembersResponse represents the response from listing team members.
+type ListTeamMembersResponse struct {
+	Members []TeamMember `json:"members"`
+}
+
+// Alias represents a Vercel alias.
+type Alias struct {
+	ID         string `json:"id"`
+	Alias      string `json:"alias"`
+	Deployment *struct {
+		ID  string `json:"id"`
+		URL string `json:"url"`
+	} `json:"deployment,omitempty"`
+	ProjectID string  `json:"projectId,omitempty"`
+	Domain    string  `json:"domain,omitempty"`
+	Target    string  `json:"target,omitempty"`
+	Redirect  *string `json:"redirect,omitempty"`
+	CreatedAt int64   `json:"createdAt,omitempty"`
+	UpdatedAt int64   `json:"updatedAt,omitempty"`
+}
+
+// ListAliasesResponse represents the response from listing aliases.
+type ListAliasesResponse struct {
+	Aliases    []Alias `json:"aliases"`
+	Pagination struct {
+		Count int `json:"count"`
+		Next  int `json:"next,omitempty"`
+		Prev  int `json:"prev,omitempty"`
+	} `json:"pagination"`
+}
+
+// CreateAliasRequest represents a request to create an alias.
+type CreateAliasRequest struct {
+	Alias      string `json:"alias"`
+	Deployment string `json:"deploymentId,omitempty"`
+	Redirect   string `json:"redirect,omitempty"`
+}
+
+// Secret represents a Vercel secret.
+type Secret struct {
+	ID         string   `json:"id"`
+	Name       string   `json:"name"`
+	Value      string   `json:"value,omitempty"` // Only returned when creating
+	TeamID     string   `json:"teamId,omitempty"`
+	UserID     string   `json:"userId,omitempty"`
+	ProjectIDs []string `json:"projectIds,omitempty"`
+	CreatedAt  int64    `json:"createdAt,omitempty"`
+	UpdatedAt  int64    `json:"updatedAt,omitempty"`
+}
+
+// ListSecretsResponse represents the response from listing secrets.
+type ListSecretsResponse struct {
+	Secrets []Secret `json:"secrets"`
+}
+
+// CreateSecretRequest represents a request to create a secret.
+type CreateSecretRequest struct {
+	Name       string   `json:"name"`
+	Value      string   `json:"value"`
+	TeamID     string   `json:"teamId,omitempty"`
+	ProjectIDs []string `json:"projectIds,omitempty"`
 }

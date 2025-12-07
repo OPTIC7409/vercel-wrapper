@@ -52,3 +52,12 @@ func (c *Client) CancelDeployment(ctx context.Context, id string) error {
 	return c.doRequest(ctx, "PATCH", fmt.Sprintf("/v13/deployments/%s/cancel", id), nil, nil, nil)
 }
 
+// GetDeploymentLogs retrieves logs for a deployment by ID.
+func (c *Client) GetDeploymentLogs(ctx context.Context, id string) (*DeploymentLogsResponse, error) {
+	var resp DeploymentLogsResponse
+	if err := c.doRequest(ctx, "GET", fmt.Sprintf("/v2/deployments/%s/logs", id), nil, nil, &resp); err != nil {
+		return nil, err
+	}
+
+	return &resp, nil
+}

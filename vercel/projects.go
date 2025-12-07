@@ -34,3 +34,17 @@ func (c *Client) GetProject(ctx context.Context, idOrName string) (*Project, err
 	return &project, nil
 }
 
+// UpdateProject updates a project by ID or name.
+func (c *Client) UpdateProject(ctx context.Context, idOrName string, req UpdateProjectRequest) (*Project, error) {
+	var project Project
+	if err := c.doRequest(ctx, "PATCH", fmt.Sprintf("/v9/projects/%s", idOrName), nil, req, &project); err != nil {
+		return nil, err
+	}
+
+	return &project, nil
+}
+
+// DeleteProject deletes a project by ID or name.
+func (c *Client) DeleteProject(ctx context.Context, idOrName string) error {
+	return c.doRequest(ctx, "DELETE", fmt.Sprintf("/v9/projects/%s", idOrName), nil, nil, nil)
+}

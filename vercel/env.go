@@ -28,8 +28,17 @@ func (c *Client) CreateEnvVar(ctx context.Context, projectIDOrName string, req C
 	return &envVar, nil
 }
 
+// UpdateEnvVar updates an environment variable by ID.
+func (c *Client) UpdateEnvVar(ctx context.Context, projectIDOrName, envID string, req UpdateEnvVarRequest) (*EnvVar, error) {
+	var envVar EnvVar
+	if err := c.doRequest(ctx, "PATCH", fmt.Sprintf("/v9/projects/%s/env/%s", projectIDOrName, envID), nil, req, &envVar); err != nil {
+		return nil, err
+	}
+
+	return &envVar, nil
+}
+
 // DeleteEnvVar deletes an environment variable by ID.
 func (c *Client) DeleteEnvVar(ctx context.Context, projectIDOrName, envID string) error {
 	return c.doRequest(ctx, "DELETE", fmt.Sprintf("/v9/projects/%s/env/%s", projectIDOrName, envID), nil, nil, nil)
 }
-

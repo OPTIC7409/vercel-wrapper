@@ -4,9 +4,13 @@ A production-ready Go client library for the [Vercel REST API](https://vercel.co
 
 ## Features
 
-- ✅ **Projects**: List and retrieve project information
-- ✅ **Deployments**: List, create, get, and cancel deployments
-- ✅ **Environment Variables**: List, create, and delete environment variables
+- ✅ **Projects**: List, get, update, and delete projects
+- ✅ **Deployments**: List, get, create, cancel deployments, and retrieve logs
+- ✅ **Environment Variables**: List, create, update, and delete environment variables
+- ✅ **Domains**: List, get, create, and delete domains
+- ✅ **Teams**: List teams, get team details, and list team members
+- ✅ **Aliases**: List, create, and delete deployment aliases
+- ✅ **Secrets**: List, create, get, and delete account-level secrets
 - ✅ **Type-safe**: Full type definitions for all API responses
 - ✅ **Error handling**: Custom error types with detailed API error information
 - ✅ **Context support**: All methods support Go contexts for cancellation and timeouts
@@ -93,6 +97,23 @@ project, err := client.GetProject(ctx, "project-id-or-name")
 if err != nil {
     log.Fatal(err)
 }
+
+// Update a project
+req := vercel.UpdateProjectRequest{
+    Name:      "updated-project-name",
+    Framework: "nextjs",
+    BuildCommand: "npm run build",
+}
+updated, err := client.UpdateProject(ctx, "project-id", req)
+if err != nil {
+    log.Fatal(err)
+}
+
+// Delete a project
+err := client.DeleteProject(ctx, "project-id")
+if err != nil {
+    log.Fatal(err)
+}
 ```
 
 ### Deployments
@@ -132,6 +153,15 @@ err := client.CancelDeployment(ctx, "deployment-id")
 if err != nil {
     log.Fatal(err)
 }
+
+// Get deployment logs
+logs, err := client.GetDeploymentLogs(ctx, "deployment-id")
+if err != nil {
+    log.Fatal(err)
+}
+for _, log := range logs.Logs {
+    fmt.Printf("[%s] %s\n", log.Type, log.Message)
+}
 ```
 
 ### Environment Variables
@@ -151,6 +181,16 @@ req := vercel.CreateEnvVarRequest{
     Target: []vercel.EnvTarget{vercel.EnvTargetProduction},
 }
 envVar, err := client.CreateEnvVar(ctx, "project-id", req)
+if err != nil {
+    log.Fatal(err)
+}
+
+// Update an environment variable
+updateReq := vercel.UpdateEnvVarRequest{
+    Value:  "new-value",
+    Target: []vercel.EnvTarget{vercel.EnvTargetProduction, vercel.EnvTargetPreview},
+}
+updated, err := client.UpdateEnvVar(ctx, "project-id", "env-var-id", updateReq)
 if err != nil {
     log.Fatal(err)
 }
@@ -189,6 +229,97 @@ if err != nil {
 
 // Remove a domain from a project
 err := client.DeleteDomain(ctx, "project-id", "example.com")
+if err != nil {
+    log.Fatal(err)
+}
+```
+
+### Teams
+
+```go
+// List all teams
+teams, err := client.ListTeams(ctx)
+if err != nil {
+    log.Fatal(err)
+}
+
+// Get a specific team
+team, err := client.GetTeam(ctx, "team-id")
+if err != nil {
+    log.Fatal(err)
+}
+
+// List team members
+members, err := client.ListTeamMembers(ctx, "team-id")
+if err != nil {
+    log.Fatal(err)
+}
+for _, member := range members.Members {
+    fmt.Printf("Member: %s (Role: %s)\n", member.User.Username, member.Role)
+}
+```
+
+### Aliases
+
+```go
+// List all aliases (optionally filtered by project or deployment)
+aliases, err := client.ListAliases(ctx, "project-id", "", 10)
+if err != nil {
+    log.Fatal(err)
+}
+
+// List aliases for a specific deployment
+aliases, err := client.ListDeploymentAliases(ctx, "deployment-id")
+if err != nil {
+    log.Fatal(err)
+}
+
+// Create a new alias
+req := vercel.CreateAliasRequest{
+    Alias:      "example.com",
+    Deployment: "deployment-id",
+}
+alias, err := client.CreateAlias(ctx, req)
+if err != nil {
+    log.Fatal(err)
+}
+
+// Delete an alias
+err := client.DeleteAlias(ctx, "alias-id")
+if err != nil {
+    log.Fatal(err)
+}
+```
+
+### Secrets
+
+```go
+// List all secrets
+secrets, err := client.ListSecrets(ctx)
+if err != nil {
+    log.Fatal(err)
+}
+
+// Get a specific secret
+secret, err := client.GetSecret(ctx, "secret-id")
+if err != nil {
+    log.Fatal(err)
+}
+
+// Create a new secret
+req := vercel.CreateSecretRequest{
+    Name:  "API_KEY",
+    Value: "secret-value",
+    // Optionally associate with projects
+    ProjectIDs: []string{"project-id"},
+}
+secret, err := client.CreateSecret(ctx, req)
+if err != nil {
+    log.Fatal(err)
+}
+
+// Delete a secret
+err := client.DeleteSecret(ctx, "secret-id")
 if err != nil {
     log.Fatal(err)
 }
@@ -275,10 +406,13 @@ This is not an official Vercel SDK. It is a community-maintained wrapper around 
 
 This SDK currently supports:
 
-- ✅ Projects (list, get)
-- ✅ Deployments (list, get, create, cancel)
-- ✅ Environment Variables (list, create, delete)
-- ✅ Domains (list, get, create, delete)
+- ✅ **Projects**: List, get, update, delete
+- ✅ **Deployments**: List, get, create, cancel, get logs
+- ✅ **Environment Variables**: List, create, update, delete
+- ✅ **Domains**: List, get, create, delete
+- ✅ **Teams**: List, get, list members
+- ✅ **Aliases**: List, list by deployment, create, delete
+- ✅ **Secrets**: List, get, create, delete
 
 Additional endpoints can be added as needed. The client architecture makes it easy to extend with new API methods.
 
