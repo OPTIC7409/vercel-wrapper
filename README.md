@@ -20,7 +20,7 @@ A production-ready Go client library for the [Vercel REST API](https://vercel.co
 ## Installation
 
 ```bash
-go get github.com/<my-username>/vercel-wrapper
+go get github.com/OPTIC7409/vercel-wrapper
 ```
 
 ## Quick Start
@@ -33,7 +33,7 @@ import (
     "fmt"
     "os"
     
-    "github.com/<my-username>/vercel-wrapper/vercel"
+    "github.com/OPTIC7409/vercel-wrapper/vercel"
 )
 
 func main() {
